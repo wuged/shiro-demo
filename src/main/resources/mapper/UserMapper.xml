@@ -2,6 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.proj.shirodemo.dao.UserMapper">
 
-
+    <resultMap id="ReturnMap" type="com.proj.shirodemo.entity.User">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <collection property="roles" ofType="com.proj.shirodemo.entity.Role">
+            <id column="role_id" jdbcType="INTEGER" property="id"/>
+            <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+            <collection property="perms" ofType="com.proj.shirodemo.entity.Perm">
+                <id column="perm_id" jdbcType="INTEGER" property="id"/>
+                <result column="permissions_name" jdbcType="VARCHAR" property="permissionsName"/>
+            </collection>
+        </collection>
+    </resultMap>
+    
+    <select id="selectByUserName" resultMap="ReturnMap">
+        SELECT a.id, user_name, password, state, b.id role_id, role_name, e.id perm_id, e.permissions_name
+        FROM sys_user a LEFT JOIN sys_user_role c
+        ON a.id = c.user_id
+        LEFT JOIN sys_role b
+        ON c.role_id = b.id
+        LEFT JOIN  sys_role_perm d
+        ON b.id = d.role_id
+        LEFT JOIN  sys_perm e
+        ON d.perm_id = e.id
+        WHERE a.user_name = #{userName}
+    </select>
 
 </mapper>

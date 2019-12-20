@@ -1,7 +1,9 @@
 package com.proj.shirodemo.service.impl;
 
 import com.proj.shirodemo.dao.UserMapper;
+import com.proj.shirodemo.entity.User;
 import com.proj.shirodemo.service.UserService;
+import com.proj.shirodemo.util.DataUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,4 +23,12 @@ public class UserServiceImpl implements UserService {
      */
     @Resource
     private UserMapper userMapper;
+
+    @Override
+    public User selectByUserName(String userName) {
+        if (DataUtil.isEmpty(userName)) {
+            return null;
+        }
+        return userMapper.selectByUserName(userName);
+    }
 }

@@ -14,11 +14,11 @@ public final class ProjectConstant {
 	/**
 	 * 全局基础包名
 	 */
-	public static final String CORE_PACKAGE = PROJECT_PACKAGE + ".core";
+	public static final String CORE_PACKAGE = PROJECT_PACKAGE + "";
 	/**
 	 * 生成代码所在的基础包名
 	 */
-	public static final String BASE_PACKAGE = PROJECT_PACKAGE + ".manage";
+	public static final String BASE_PACKAGE = PROJECT_PACKAGE + "";
 	/**
 	 * 生成的entity所在包
 	 */
