@@ -3,6 +3,7 @@ package com.proj.shirodemo.controller;
 import com.proj.shirodemo.entity.User;
 import com.proj.shirodemo.service.UserService;
 import com.proj.shirodemo.util.PasswordHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -18,6 +19,7 @@ import javax.annotation.Resource;
  * @author wuge
  * @date 2019/12/19
  */
+@Slf4j
 @RestController
 @RequestMapping
 public class UserController extends BaseController {
@@ -48,13 +50,14 @@ public class UserController extends BaseController {
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(token);
+            log.info("是否登录成功：" +subject.isAuthenticated());
         } catch (IncorrectCredentialsException ice) {
             return "password error!";
         } catch (UnknownAccountException uae) {
             return "username error!";
         }
-
         User selectUser = userService.selectByUserName(user.getUserName());
+        log.info("登录成功，当前用户：" +selectUser);
         subject.getSession().setAttribute("user", selectUser);
         return "SUCCESS";
     }
@@ -66,7 +69,7 @@ public class UserController extends BaseController {
      * @param roleId（1-admin， 2-user）角色
      * @return
      */
-    @RequiresPermissions("user:add")
+    @RequiresPermissions(value = {"user:add"})
     @GetMapping("/register")
     public Object register(@RequestParam String username, @RequestParam String password,
                 Integer roleId) {

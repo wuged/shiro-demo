@@ -2,6 +2,7 @@ package com.proj.shirodemo.controller;
 
 import com.proj.shirodemo.entity.User;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,16 @@ public class AuthcController {
     @GetMapping("removable")
     public Object removable() {
         return "removable，需要user:delete权限";
+    }
+
+    /**
+     * shiroConfig配置需要权限user:delete
+     * @return
+     */
+    @RequiresPermissions(value = {"user:query"})
+    @GetMapping("query")
+    public Object query() {
+        return "query，需要user:query权限";
     }
 
     /**

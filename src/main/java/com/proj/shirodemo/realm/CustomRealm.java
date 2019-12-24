@@ -5,10 +5,8 @@ import com.proj.shirodemo.entity.Role;
 import com.proj.shirodemo.entity.User;
 import com.proj.shirodemo.service.UserService;
 import com.proj.shirodemo.util.DataUtil;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -23,6 +21,7 @@ import javax.annotation.Resource;
  * @author wuge
  * @date 2019/12/19
  */
+@Slf4j
 public class CustomRealm extends AuthorizingRealm {
 
     /**
@@ -30,6 +29,11 @@ public class CustomRealm extends AuthorizingRealm {
      */
     @Resource
     private UserService userService;
+
+    @Override
+    public String getName() {
+        return "CustomRealm";
+    }
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
@@ -47,6 +51,8 @@ public class CustomRealm extends AuthorizingRealm {
         } else {
             throw new ArithmeticException("用户不存在");
         }
+        log.info("当前用户角色为：" +simpleAuthenticationInfo.getRoles());
+        log.info("当前用户权限为：" +simpleAuthenticationInfo.getStringPermissions());
         return simpleAuthenticationInfo;
     }
 
@@ -68,6 +74,9 @@ public class CustomRealm extends AuthorizingRealm {
         User user = userService.selectByUserName(userName);
         if (DataUtil.isEmpty(user)) {
             return null;
+        }
+        if( !"1".equals(user.getState()) ){
+            throw new LockedAccountException();
         }
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(
                 // ByteSource.Util.bytes(user.getSalt()) 二进制， getName() 获取realm名字
