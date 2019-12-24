@@ -3,6 +3,7 @@ package com.proj.shirodemo.entity;
 import lombok.Data;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class Role {
     /**
      * id
      */
-    @Column(name = "id")
+    @Id
     private Long id;
 
     /**

@@ -3,6 +3,7 @@ package com.proj.shirodemo.entity;
 import lombok.Data;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -17,7 +18,7 @@ public class Perm {
     /**
      * id
      */
-    @Column(name = "id")
+    @Id
     private Long id;
 
     /**

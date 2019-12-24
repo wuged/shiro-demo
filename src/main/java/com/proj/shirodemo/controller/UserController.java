@@ -1,11 +1,15 @@
 package com.proj.shirodemo.controller;
 
-import com.proj.shirodemo.entity.ResponseEntity;
 import com.proj.shirodemo.entity.User;
 import com.proj.shirodemo.service.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.proj.shirodemo.util.PasswordHelper;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -15,7 +19,7 @@ import javax.annotation.Resource;
  * @date 2019/12/19
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping
 public class UserController extends BaseController {
 
     /**
@@ -23,10 +27,60 @@ public class UserController extends BaseController {
      */
     @Resource
     private UserService userService;
+
+    /**
+     * 登录成功页
+     * @return
+     */
+    @GetMapping("/home")
+    public Object login() {
+        return "Here is home page, login success!";
+    }
+
+    @GetMapping("/unauthc")
+    public Object unauthc() {
+        return "Here is Unauthc page";
+    }
     
-    @GetMapping("/login")
-    public ResponseEntity login() {
-        User zhangsan = userService.selectByUserName("wuge");
-        return successResult(zhangsan);
+    @PostMapping("/login")
+    public String dologin(@RequestBody User user) {
+        UsernamePasswordToken token = new UsernamePasswordToken(user.getUserName(), user.getPassword());
+        Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.login(token);
+        } catch (IncorrectCredentialsException ice) {
+            return "password error!";
+        } catch (UnknownAccountException uae) {
+            return "username error!";
+        }
+
+        User selectUser = userService.selectByUserName(user.getUserName());
+        subject.getSession().setAttribute("user", selectUser);
+        return "SUCCESS";
+    }
+
+    /**
+     *  添加用户
+     * @param username
+     * @param password
+     * @param roleId（1-admin， 2-user）角色
+     * @return
+     */
+    @RequiresPermissions("user:add")
+    @GetMapping("/register")
+    public Object register(@RequestParam String username, @RequestParam String password,
+                Integer roleId) {
+        User user = new User();
+        user.setUserName(username);
+        user.setPassword(password);
+        PasswordHelper.encryptPassword(user);
+        user.setState("1");
+        userService.saveUser(user, roleId);
+        return "SUCCESS";
+    }
+
+    @GetMapping(value = "/logout")
+    public String logout() {
+        return "logout";
     }
 }

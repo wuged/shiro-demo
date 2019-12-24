@@ -16,4 +16,18 @@ public interface UserMapper {
      * @return
      */
     User selectByUserName(@Param("userName") String userName);
+
+    /**
+     * 新增用户
+     * @param user
+     * @return 插入数据主键ID
+     */
+    Long save(@Param("user") User user);
+
+    /**
+     * 同步用户的权限
+     * @param userId
+     * @param roleId
+     */
+     void saveUserRole(@Param("userId") Long userId, @Param("roleId") Long roleId);
 }

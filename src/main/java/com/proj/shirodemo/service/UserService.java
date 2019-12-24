@@ -15,4 +15,11 @@ public interface UserService {
      * @return
      */
     User selectByUserName(String userName);
+
+    /**
+     * 新增用户并赋权
+     * @param user
+     * @param roleId
+     */
+    void saveUser(User user, Integer roleId);
 }

@@ -6,6 +6,7 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="salt" jdbcType="VARCHAR" property="salt"/>
         <result column="state" jdbcType="VARCHAR" property="state"/>
         <collection property="roles" ofType="com.proj.shirodemo.entity.Role">
             <id column="role_id" jdbcType="INTEGER" property="id"/>
@@ -18,7 +19,7 @@
     </resultMap>
     
     <select id="selectByUserName" resultMap="ReturnMap">
-        SELECT a.id, user_name, password, state, b.id role_id, role_name, e.id perm_id, e.permissions_name
+        SELECT a.id, user_name, password, salt, state, b.id role_id, role_name, e.id perm_id, e.permissions_name
         FROM sys_user a LEFT JOIN sys_user_role c
         ON a.id = c.user_id
         LEFT JOIN sys_role b
@@ -30,4 +31,13 @@
         WHERE a.user_name = #{userName}
     </select>
 
+    <insert id="save" parameterType="com.proj.shirodemo.entity.User" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO sys_user (user_name, password, salt, state)
+        VALUES (#{user.userName}, #{user.password}, #{user.salt}, #{user.state}   )
+    </insert>
+
+    <insert id="saveUserRole" >
+        INSERT INTO sys_user_role (user_id, role_id)
+        VALUES (#{userId}, #{roleId})
+    </insert>
 </mapper>
